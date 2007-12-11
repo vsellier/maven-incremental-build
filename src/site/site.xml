@@ -3,7 +3,8 @@
 <project>
   <body>
     <menu>
-    	<item name="java.net home" href="https://maven-incremental-build.dev.java.net/"/>
+    	<item name="java.net home" href="index-old.html"/>
     </menu>
+    <menu ref="reports"/>
   </body>
 </project>
