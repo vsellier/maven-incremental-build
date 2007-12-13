@@ -24,10 +24,17 @@
 		</url>
 	</scm>
 
+	<issueManagement>
+		<system>scarab</system>
+		<url>
+			https://maven-incremental-build.dev.java.net/servlets/ProjectIssues
+		</url>
+	</issueManagement>
+
 	<distributionManagement>
 		<site>
 			<id>website</id>
-			<url>file://${basedir}/www</url>
+			<url>file://${basedir}/www/maven</url>
 		</site>
 	</distributionManagement>
 	<dependencies>
