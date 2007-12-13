@@ -3,7 +3,7 @@
 <project>
   <body>
     <menu>
-    	<item name="java.net home" href="index-old.html"/>
+    	<item name="java.net home" href="index.html"/>
     </menu>
     <menu ref="reports"/>
   </body>

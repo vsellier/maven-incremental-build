@@ -24,6 +24,76 @@
 		</url>
 	</scm>
 
+	<inceptionYear>2007</inceptionYear>
+	<mailingLists>
+		<mailingList>
+			<name>dev</name>
+			<post>dev@maven-incremental-build.dev.java.net</post>
+			<archive>
+				https://maven-incremental-build.dev.java.net/servlets/SummarizeList?listName=dev
+			</archive>
+			<subscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</subscribe>
+			<unsubscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</unsubscribe>
+		</mailingList>
+		<mailingList>
+			<name>commits</name>
+			<post>commits@maven-incremental-build.dev.java.net</post>
+			<archive>
+				https://maven-incremental-build.dev.java.net/servlets/SummarizeList?listName=commits
+			</archive>
+			<subscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</subscribe>
+			<unsubscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</unsubscribe>
+		</mailingList>
+		<mailingList>
+			<name>announce</name>
+			<post>announce@maven-incremental-build.dev.java.net</post>
+			<archive>
+				https://maven-incremental-build.dev.java.net/servlets/SummarizeList?listName=announce
+			</archive>
+			<subscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</subscribe>
+			<unsubscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</unsubscribe>
+		</mailingList>
+		<mailingList>
+			<name>issues</name>
+			<post>issues@maven-incremental-build.dev.java.net</post>
+			<archive>
+				https://maven-incremental-build.dev.java.net/servlets/SummarizeList?listName=issues
+			</archive>
+			<subscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</subscribe>
+			<unsubscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</unsubscribe>
+		</mailingList>
+		<mailingList>
+			<name>users</name>
+			<post>users@maven-incremental-build.dev.java.net</post>
+			<archive>
+				https://maven-incremental-build.dev.java.net/servlets/SummarizeList?listName=users
+			</archive>
+			<subscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</subscribe>
+			<unsubscribe>
+				https://maven-incremental-build.dev.java.net/servlets/ProjectMailingListList
+			</unsubscribe>
+		</mailingList>
+	</mailingLists>
+	
+
 	<issueManagement>
 		<system>scarab</system>
 		<url>
@@ -34,7 +104,7 @@
 	<distributionManagement>
 		<site>
 			<id>website</id>
-			<url>file://${basedir}/www/maven</url>
+			<url>file://${basedir}/www/${version}/maven</url>
 		</site>
 	</distributionManagement>
 	<dependencies>
