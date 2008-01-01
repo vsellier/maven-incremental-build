@@ -1,0 +1,17 @@
+ ------
+ Maven Incremental Build Plugin
+ ------
+ Vincent Sellier
+ ------
+ Decembre 2007
+ ------
+
+ Overview
+ 
+   The Maven Incremental Build plugin is a plugin that enable maven to recompile only what it have to when you call mvn compile (It is not necessary to call clean phase now).
+   
+Goals Overview
+ 
+  The Maven Incremental Build Plugin is a part of the build process, So it is not necessary to have a particulary goal to call it outside the build process.
+  
+ 
