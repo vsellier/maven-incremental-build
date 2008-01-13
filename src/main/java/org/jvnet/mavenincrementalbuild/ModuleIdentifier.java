@@ -1,4 +1,4 @@
-package fr.jvnet.mavenincrementalbuild;
+package org.jvnet.mavenincrementalbuild;
 
 public class ModuleIdentifier {
 	private String groupId;

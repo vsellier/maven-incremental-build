@@ -1,4 +1,4 @@
-package fr.jvnet.mavenincrementalbuild;
+package org.jvnet.mavenincrementalbuild;
 
 public class Module {
 	private ModuleIdentifier identifier;

@@ -1,4 +1,4 @@
-package fr.jvnet.mavenincrementalbuild;
+package org.jvnet.mavenincrementalbuild;
 
 import java.util.HashMap;
 import java.util.Map;
