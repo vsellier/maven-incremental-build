@@ -1,0 +1,41 @@
+ ------
+ Usage
+ ------
+ Vincent Sellier
+ ------
+ January 14th, 2008
+
+Introduction
+
+  Because it looks for modification on modules of an unique project, the Maven Incremental Plugin takes it sens only on multi modules projects. 
+  If modification on a module is detected, the output directory is removed.
+
+* Attach the plugin to the project lifecycle
+
+  To be efficient the plugin must be executed at the beginning of the compilation phase. To achieve this, you have to add this on the parent pom of you project :
+  
++-----
+  <project>
+  	[...]
+  	<build>
+  		[...]
+		<plugins>
+			[...]
+			<plugin>
+				<groupId>net.jvnet.maven.incrementalbuild</groupId>
+				<artifactId>incremental-build-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>incremental-build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			[...]
+		</plugins>
+		[...]
+	</build>
+	[...]
+  </project>
++----- 
