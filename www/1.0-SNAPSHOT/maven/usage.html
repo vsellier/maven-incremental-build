@@ -43,7 +43,7 @@
   
     
             <div class="xleft">
-        Last Published: 2008-01-14
+        Last Published: 2008-03-13
                       </div>
             <div class="xright">      
   
@@ -142,8 +142,25 @@
       <div id="contentBox">
         <div class="section"><h2>Introduction</h2>
 <p>Because it looks for modification on modules of an unique project, the Maven Incremental Plugin takes it sens only on multi modules projects. If modification on a module is detected, the output directory is removed.</p>
+<div class="section"><h3>Using the plugin</h3>
+<p>You have two way to use the plugin:</p>
+<ol type="1"><li>checkout the sources from subversion and execute an <tt>mvn install</tt>
+ to install it on you local repository</li>
+<li>add the jvnet maven2 repository on your pom or on your settings.xml<p>On one of you pom.xml or settings.xml you have to put this configuration :</p>
+<div class="source"><pre>        &lt;repositories&gt;
+                &lt;repository&gt;
+                        &lt;id&gt;maven2-repository.dev.java.net&lt;/id&gt;
+                        &lt;name&gt;Java.net Repository for Maven&lt;/name&gt;
+                        &lt;url&gt;http://download.java.net/maven/2/&lt;/url&gt;
+                        &lt;layout&gt;default&lt;/layout&gt;
+                &lt;/repository&gt;
+        &lt;/repositories&gt;</pre>
+</div>
+</li>
+</ol>
+</div>
 <div class="section"><h3>Attach the plugin to the project lifecycle</h3>
-<p>Tho be efficient the plugin must be at the beginning of the compilation phase. To achieve this, you have to add this on the parent pom of you project :</p>
+<p>To be efficient the plugin must be executed at the beginning of the compilation phase. To achieve this, you have to add this on the parent pom of you project :</p>
 <div class="source"><pre>  &lt;project&gt;
         [...]
         &lt;build&gt;
