@@ -6,7 +6,7 @@
     <link>http://maven-incremental-build.dev.java.net</link>
     <description>Incremental-build-plugin Maven Mojo - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2007</copyright>
+    <copyright>&#169;2007 - 2008</copyright>
     <item>
       <title>File: 5,
              Errors: 265,
@@ -29,35 +29,7 @@
           <tbody>
                           <tr>
                 <td>
-                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#fr.jvnet.mavenincrementalbuild.package.html">fr/jvnet/mavenincrementalbuild/package.html</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  1
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#fr.jvnet.mavenincrementalbuild.ModuleIdentifier.java">fr/jvnet/mavenincrementalbuild/ModuleIdentifier.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  107
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#fr.jvnet.mavenincrementalbuild.IncrementalBuildMojo.java">fr/jvnet/mavenincrementalbuild/IncrementalBuildMojo.java</a>
+                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#org.jvnet.mavenincrementalbuild.IncrementalBuildMojo.java">org/jvnet/mavenincrementalbuild/IncrementalBuildMojo.java</a>
                 </td>
                 <td>
                   0
@@ -71,7 +43,21 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#fr.jvnet.mavenincrementalbuild.BuildTree.java">fr/jvnet/mavenincrementalbuild/BuildTree.java</a>
+                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#org.jvnet.mavenincrementalbuild.package.html">org/jvnet/mavenincrementalbuild/package.html</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#org.jvnet.mavenincrementalbuild.BuildTree.java">org/jvnet/mavenincrementalbuild/BuildTree.java</a>
                 </td>
                 <td>
                   0
@@ -85,7 +71,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#fr.jvnet.mavenincrementalbuild.Module.java">fr/jvnet/mavenincrementalbuild/Module.java</a>
+                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#org.jvnet.mavenincrementalbuild.Module.java">org/jvnet/mavenincrementalbuild/Module.java</a>
                 </td>
                 <td>
                   0
@@ -95,6 +81,20 @@
                 </td>
                 <td>
                   61
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://maven-incremental-build.dev.java.net/checkstyle.html#org.jvnet.mavenincrementalbuild.ModuleIdentifier.java">org/jvnet/mavenincrementalbuild/ModuleIdentifier.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  107
                 </td>
               </tr>
                       </tbody>

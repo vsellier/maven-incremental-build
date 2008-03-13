@@ -42,7 +42,7 @@
   
     
             <div class="xleft">
-        Last Published: 2007-12-14
+        Last Published: 2008-01-14
                       </div>
             <div class="xright">      
   
@@ -67,10 +67,22 @@
   
   
     
-                       <ul>
+                   <h5>Home</h5>
+            <ul>
               
     <li class="none">
-                    <a href="index.html">java.net home</a>
+                    <a href="https://maven-incremental-build.dev.java.net/" class="externalLink">java.net home</a>
+          </li>
+          </ul>
+              <h5>Overview</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">Introduction</a>
+          </li>
+              
+    <li class="none">
+                    <a href="usage.html">Usage</a>
           </li>
           </ul>
               <h5>Project Documentation</h5>
@@ -78,8 +90,6 @@
               
                 
               
-      
-            
       
             
             
@@ -99,10 +109,6 @@
             <li class="expanded">
                     <a href="project-info.html">Project Information</a>
                   <ul>
-                  
-    <li class="none">
-                    <a href="index.html">About</a>
-          </li>
                   
     <li class="none">
                     <a href="integration.html">Continuous Integration</a>
@@ -207,24 +213,6 @@
 </tr>
 </table>
 </div>
-<div class="section"><h3>test</h3>
-<p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p>
-<table class="bodyTable"><tr class="b"><th>GroupId</th>
-<th>ArtifactId</th>
-<th>Version</th>
-<th>Classifier</th>
-<th>Type</th>
-<th>Optional</th>
-</tr>
-<tr class="a"><td>junit</td>
-<td>junit</td>
-<td>3.8.1</td>
-<td>-</td>
-<td>jar</td>
-<td> </td>
-</tr>
-</table>
-</div>
 </div>
 <div class="section"><h2>Project Transitive Dependencies</h2>
 <p>The following is a list of transitive dependencies for this project. Transitive dependencies are the dependencies of the project dependencies.</p>
@@ -288,13 +276,29 @@
 </tr>
 </table>
 </div>
+<div class="section"><h3>test</h3>
+<p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p>
+<table class="bodyTable"><tr class="b"><th>GroupId</th>
+<th>ArtifactId</th>
+<th>Version</th>
+<th>Classifier</th>
+<th>Type</th>
+<th>Optional</th>
+</tr>
+<tr class="a"><td>junit</td>
+<td>junit</td>
+<td>3.8.1</td>
+<td>-</td>
+<td>jar</td>
+<td> </td>
+</tr>
+</table>
+</div>
 </div>
 <div class="section"><h2>Project Dependency Graph</h2>
 <div class="section"><h3>Dependency Tree</h3>
-<p><ul><li><a href="#org.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin">org.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin</a>
-<ul><li><a href="#junit:junit:jar">junit:junit:jar</a>
-</li>
-<li><a href="#org.apache.maven:maven-project:jar">org.apache.maven:maven-project:jar</a>
+<p><ul><li><a href="#net.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin">net.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin</a>
+<ul><li><a href="#org.apache.maven:maven-project:jar">org.apache.maven:maven-project:jar</a>
 <ul><li><a href="#org.apache.maven:maven-profile:jar">org.apache.maven:maven-profile:jar</a>
 </li>
 <li><a href="#org.apache.maven:maven-model:jar">org.apache.maven:maven-model:jar</a>
@@ -327,16 +331,13 @@
 </p>
 </div>
 <div class="section"><h3>Dependency Listings</h3>
-<p><a name="org.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin"><b>Incremental-build-plugin Maven Mojo</b>
+<p><a name="net.jvnet.maven.incrementalbuild:incremental-build-plugin:maven-plugin"><b>Incremental-build-plugin Maven Mojo</b>
 </a>
 </p>
 <p>The Maven Incremental Build plugin is a plugin that enable maven
 		to recompile only what it have to when you call mvn compile (It
 		is not necessary to call clean phase now).</p>
 <p><a href="http://maven-incremental-build.dev.java.net" class="externalLink">http://maven-incremental-build.dev.java.net</a>
-</p>
-<p><a name="junit:junit:jar"><b>Unnamed - junit:junit:jar:3.8.1</b>
-</a>
 </p>
 <p><a name="org.apache.maven:maven-project:jar"><b>Maven Project Builder</b>
 </a>
@@ -401,7 +402,7 @@
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2007-2008
     
           
   
