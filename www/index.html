@@ -1,1 +1,16 @@
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />                                <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />                                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />                                <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />Maven incremental build plugin enables maven2 to realize incremental builds on multi-modules projects. With this plugin in the parent pom, the modules with modification and their dependencies will be clean before any action. No needs to call mvn clean compile which recompile modules with no modification too. See the <a title="maven generated site" href="https://maven-incremental-build.dev.java.net/nonav/1.0-SNAPSHOT/maven/index.html">maven generated site</a>  for details.                                                
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+
+Maven incremental build plugin enables maven2 to realize a pseudo incremental
+builds on multi-modules projects. With this plugin declared in the parent pom,
+the modules with modification and all their dependendent modules will be clean 
+before any action on it like mvn compile or mvn package. <br>
+No needs to call mvn clean compile on parent pom to ensure that the entire project compile.<br>
+<br>
+ See the
+<a title="maven generated site"
+	href="https://maven-incremental-build.dev.java.net/nonav/1.0-SNAPSHOT/maven/index.html">maven
+generated site</a>
+for more details.
