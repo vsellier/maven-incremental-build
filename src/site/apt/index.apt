@@ -12,6 +12,6 @@
    
 Goals Overview
  
-  The Maven Incremental Build Plugin is a part of the build process, So it is not necessary to have a particulary goal to call it outside the build process.
+  The Maven Incremental Build Plugin is a part of the build process, so it is not necessary to have a particulary goal to call it outside the build process.
   
  

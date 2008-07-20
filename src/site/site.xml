@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <project>
 	<body>
 		<menu name="Home">
-			<item name="java.net home"
-				href="https://maven-incremental-build.dev.java.net/" />
+			<item name="java.net home" href="https://maven-incremental-build.dev.java.net/" />
 		</menu>
 		<menu name="Overview">
 			<item name="Introduction" href="index.html" />
@@ -12,4 +10,9 @@
 		</menu>
 		<menu ref="reports" />
 	</body>
+	<skin>
+		<groupId>org.jvnet.maven.incrementalbuild</groupId>
+		<artifactId>site-skin</artifactId>
+		<version>1.0_SNAPSHOT</version>
+	</skin>
 </project>
