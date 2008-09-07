@@ -53,6 +53,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
+import org.jvnet.mavenincrementalbuild.utils.TimestampsManager;
 
 /**
  * Goal which touches a timestamp file.
@@ -62,235 +63,304 @@ import org.codehaus.plexus.util.StringUtils;
  * @requiresDependencyResolution test
  */
 public class IncrementalBuildMojo extends AbstractMojo {
-  /**
-   * 
-   * @parameter default-value="${project.dependencies}"
-   * @required
-   * @readonly
-   */
-  private Collection dependencies;
+	/**
+	 * 
+	 * @parameter default-value="${project.dependencies}"
+	 * @required
+	 * @readonly
+	 */
+	private Collection dependencies;
 
-  /**
-   * The Maven project.
-   * 
-   * @parameter expression="${project}"
-   * @required
-   * @readonly
-   */
-  private MavenProject project;
+	/**
+	 * The Maven project.
+	 * 
+	 * @parameter expression="${project}"
+	 * @required
+	 * @readonly
+	 */
+	private MavenProject project;
 
-  /**
-   * 
-   * @parameter default-value="${project.artifacts}"
-   * @required
-   * @readonly
-   */
-  private Collection artifacts;
+	/**
+	 * 
+	 * @parameter default-value="${project.artifacts}"
+	 * @required
+	 * @readonly
+	 */
+	private Collection artifacts;
 
-  /**
-   * Helper class to assist in attaching artifacts to the project instance. project-helper instance, used to make
-   * addition of resources simpler.
-   * 
-   * @component
-   * @required
-   * @readonly
-   */
-  private MavenProjectHelper projectHelper;
+	/**
+	 * Helper class to assist in attaching artifacts to the project instance.
+	 * project-helper instance, used to make addition of resources simpler.
+	 * 
+	 * @component
+	 * @required
+	 * @readonly
+	 */
+	private MavenProjectHelper projectHelper;
 
-  /**
-   * Dependencies from the reactor
-   */
-  private final static Map<ModuleIdentifier, Module> resolvedDependencies = new HashMap<ModuleIdentifier, Module>();
+	/**
+	 * Dependencies from the reactor
+	 */
+	private final static Map<ModuleIdentifier, Module> resolvedDependencies = new HashMap<ModuleIdentifier, Module>();
 
-  public void execute() throws MojoExecutionException {
-    Module module = null;
-    String buildDirectory = project.getBuild().getOutputDirectory();
+	/**
+	 * the timestamp manager
+	 */
+	private TimestampsManager timestampManager;
 
-    if (getLog().isDebugEnabled()) {
-      getLog().debug("Resolved modules : " + resolvedDependencies);
-    }
+	public void execute() throws MojoExecutionException {
+		Module module = null;
+		String buildDirectory = project.getBuild().getOutputDirectory();
 
-    boolean resourcesUpdated = resourcesUpdated();
-    boolean sourcesUpdated = sourcesUpdated();
-    boolean parentUpdated = parentUpdated();
+		String targetDirectory = project.getBuild().getDirectory();
 
-    module = saveModuleState(project, resourcesUpdated || sourcesUpdated || parentUpdated);
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Resolved modules : " + resolvedDependencies);
+			getLog().debug("Loading previous timestamps ...");
+		}
 
-    if (module.isUpdated()) {
-      getLog().debug("Module updated, cleaning target directory");
+		try {
+			timestampManager = new TimestampsManager(getLog(), targetDirectory);
+			timestampManager.loadPreviousTimestamps();
+		} catch (IOException e1) {
+			getLog().error("Error loading previous timestamps", e1);
+			throw new MojoExecutionException(
+					"Error loading previous timestamps.", e1);
+		}
 
-      try {
-        FileUtils.deleteDirectory(buildDirectory);
-        getLog().info(buildDirectory + " deleted");
-      } catch (IOException e) {
-        throw new MojoExecutionException("Unable to clean module.", e);
-      }
-    }
+		module = saveModuleState(project, pomUpdated() || resourcesUpdated()
+				|| sourcesUpdated() || parentUpdated());
 
-  }
+		if (module.isUpdated()) {
+			getLog().debug("Module updated, cleaning target directory");
 
-  private Boolean sourcesUpdated() {
-    getLog().info("Verifying sources...");
-    Long lastSourceModificationDate = new Long(0);
-    Long lastTargetModificationDate = new Long(0);
-    File sourceDirectory = new File(project.getBuild().getSourceDirectory());
-    File targetDirectory = new File(project.getBuild().getOutputDirectory());
+			try {
+				FileUtils.deleteDirectory(buildDirectory);
+				getLog().info(buildDirectory + " deleted");
+			} catch (IOException e) {
+				throw new MojoExecutionException("Unable to clean module.", e);
+			}
+		}
 
-    if ((!sourceDirectory.exists()) || (!targetDirectory.exists())) {
-      getLog().info("No sources or target dir found...");
-      return true;
-    }
+		getLog().debug("Saving timestamps..");
+		try {
+			timestampManager.saveTimestamps();
+		} catch (IOException e) {
+			getLog().error("Error saving timestamps.", e);
+			throw new MojoExecutionException("Error saving timestamps.", e);
+		}
 
-    DirectoryScanner scanner = new DirectoryScanner();
-    getLog().debug("Source directory : " + sourceDirectory);
-    scanner.setBasedir(sourceDirectory);
-    scanner.setIncludes(new String[] { "**/*" });
-    scanner.setExcludes(DirectoryScanner.DEFAULTEXCLUDES);
+	}
 
-    getLog().debug("Scanning sources...");
-    scanner.scan();
-    String[] files = scanner.getIncludedFiles();
-    getLog().debug("Source files : " + Arrays.toString(files));
+	private Boolean sourcesUpdated() {
+		getLog().info("Verifying sources...");
+		Long lastSourceModificationDate = new Long(0);
+		Long lastTargetModificationDate = new Long(0);
+		File sourceDirectory = new File(project.getBuild().getSourceDirectory());
+		File targetDirectory = new File(project.getBuild().getOutputDirectory());
 
-    for (int i = 0; i < files.length; i++) {
-      File file = new File(sourceDirectory, files[i]);
-      long lastModification = file.lastModified();
-      getLog().debug("" + lastModification);
-      if (lastModification > lastSourceModificationDate) {
-        lastSourceModificationDate = lastModification;
-      }
-    }
-    getLog().debug("Last source modification : " + lastSourceModificationDate);
+		if ((!sourceDirectory.exists()) || (!targetDirectory.exists())) {
+			getLog().info("No sources or target dir found...");
+			return true;
+		}
 
-    String targetDir = project.getBuild().getOutputDirectory();
-    getLog().debug("Target directory : " + targetDir);
+		DirectoryScanner scanner = new DirectoryScanner();
+		getLog().debug("Source directory : " + sourceDirectory);
+		scanner.setBasedir(sourceDirectory);
+		scanner.setIncludes(new String[] { "**/*" });
+		scanner.setExcludes(DirectoryScanner.DEFAULTEXCLUDES);
 
-    scanner = new DirectoryScanner();
-    scanner.setBasedir(project.getBuild().getOutputDirectory());
-    scanner.setIncludes(new String[] { "**/*" });
-    scanner.addDefaultExcludes();
+		getLog().debug("Scanning sources...");
+		scanner.scan();
+		String[] files = scanner.getIncludedFiles();
+		getLog().debug("Source files : " + Arrays.toString(files));
 
-    getLog().debug("Scanning output dir...");
-    scanner.scan();
-    files = scanner.getIncludedFiles();
-    getLog().debug("Target files : " + Arrays.toString(files));
+		for (int i = 0; i < files.length; i++) {
+			File file = new File(sourceDirectory, files[i]);
+			long lastModification = file.lastModified();
+			getLog().debug("" + lastModification);
+			if (lastModification > lastSourceModificationDate) {
+				lastSourceModificationDate = lastModification;
+			}
+		}
+		getLog().debug(
+				"Last source modification : " + lastSourceModificationDate);
 
-    // TODO put this in a method
-    for (int i = 0; i < files.length; i++) {
-      File file = new File(targetDir, files[i]);
-      Long lastModification = file.lastModified();
-      if (lastModification > lastTargetModificationDate) {
-        lastTargetModificationDate = lastModification;
-      }
-    }
-    getLog().debug("Last target modification date : " + lastTargetModificationDate);
+		String targetDir = project.getBuild().getOutputDirectory();
+		getLog().debug("Target directory : " + targetDir);
 
-    if (lastSourceModificationDate > lastTargetModificationDate) {
-      getLog().info("Source modification detected, clean will be called");
-      return true;
-    } else {
-      getLog().debug("No changes detected.");
-      return false;
-    }
+		scanner = new DirectoryScanner();
+		scanner.setBasedir(project.getBuild().getOutputDirectory());
+		scanner.setIncludes(new String[] { "**/*" });
+		scanner.addDefaultExcludes();
 
-  }
+		getLog().debug("Scanning output dir...");
+		scanner.scan();
+		files = scanner.getIncludedFiles();
+		getLog().debug("Target files : " + Arrays.toString(files));
 
-  private Module saveModuleState(MavenProject project, Boolean mustBeCleaned) {
-    ModuleIdentifier identifier = new ModuleIdentifier(project.getGroupId(), project.getArtifactId(), project
-        .getVersion());
-    Module module = new Module(identifier, mustBeCleaned);
+		// TODO put this in a method
+		for (int i = 0; i < files.length; i++) {
+			File file = new File(targetDir, files[i]);
+			Long lastModification = file.lastModified();
+			if (lastModification > lastTargetModificationDate) {
+				lastTargetModificationDate = lastModification;
+			}
+		}
+		getLog()
+				.debug(
+						"Last target modification date : "
+								+ lastTargetModificationDate);
 
-    resolvedDependencies.put(identifier, module);
+		if (lastSourceModificationDate > lastTargetModificationDate) {
+			getLog().info("Source modification detected, clean will be called");
+			return true;
+		} else {
+			getLog().debug("No changes detected.");
+			return false;
+		}
 
-    return module;
-  }
+	}
 
-  private Boolean resourcesUpdated() {
-    getLog().info("Verifying resources...");
-    List<Resource> resources = (List<Resource>) project.getResources();
-    for (Resource resource : resources) {
-      String source = resource.getDirectory();
-      String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource.getTargetPath() : project.getBuild()
-          .getOutputDirectory();
-      List<String> includes = (List<String>) resource.getIncludes();
-      List<String> excludes = (List<String>) resource.getExcludes();
+	private Module saveModuleState(MavenProject project, Boolean mustBeCleaned) {
+		ModuleIdentifier identifier = new ModuleIdentifier(
+				project.getGroupId(), project.getArtifactId(), project
+						.getVersion());
+		Module module = new Module(identifier, mustBeCleaned);
 
-      getLog().debug("Resources excludes : " + excludes);
-      getLog().debug("Resources includes : " + includes);
+		resolvedDependencies.put(identifier, module);
 
-      if (!new File(source).exists()) {
-        getLog().info("Resources directory does not exist : " + source);
-        continue;
-      }
+		return module;
+	}
 
-      DirectoryScanner scanner = new DirectoryScanner();
+	private Boolean resourcesUpdated() {
+		getLog().info("Verifying resources...");
+		List<Resource> resources = (List<Resource>) project.getResources();
+		for (Resource resource : resources) {
+			String source = resource.getDirectory();
+			String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource
+					.getTargetPath()
+					: project.getBuild().getOutputDirectory();
+			List<String> includes = (List<String>) resource.getIncludes();
+			List<String> excludes = (List<String>) resource.getExcludes();
 
-      scanner.setBasedir(source);
+			getLog().debug("Resources excludes : " + excludes);
+			getLog().debug("Resources includes : " + includes);
 
-      if (includes != null && !includes.isEmpty()) {
-        getLog().debug("add inclusion.");
-        scanner.setIncludes((String[]) includes.toArray(new String[includes.size()]));
-      }
+			if (!new File(source).exists()) {
+				getLog().info("Resources directory does not exist : " + source);
+				continue;
+			}
 
-      if (excludes != null && !excludes.isEmpty()) {
-        getLog().debug("add exclusions.");
-        scanner.setExcludes((String[]) excludes.toArray(new String[excludes.size()]));
-      }
-      scanner.addDefaultExcludes();
+			DirectoryScanner scanner = new DirectoryScanner();
 
-      getLog().debug("Starting resource scanning...");
-      scanner.scan();
+			scanner.setBasedir(source);
 
-      String[] files = scanner.getIncludedFiles();
-      getLog().debug(files.length + " resource files found");
+			if (includes != null && !includes.isEmpty()) {
+				getLog().debug("add inclusion.");
+				scanner.setIncludes((String[]) includes
+						.toArray(new String[includes.size()]));
+			}
 
-      for (int i = 0; i < files.length; i++) {
-        // extracting file path relative to resource dir
-        String fileName = files[i];
+			if (excludes != null && !excludes.isEmpty()) {
+				getLog().debug("add exclusions.");
+				scanner.setExcludes((String[]) excludes
+						.toArray(new String[excludes.size()]));
+			}
+			scanner.addDefaultExcludes();
 
-        File sourceFile = new File(source + File.separator + fileName);
-        File targetFile = new File(target + File.separator + fileName);
+			getLog().debug("Starting resource scanning...");
+			scanner.scan();
 
-        Boolean isUpToDate = SelectorUtils.isOutOfDate(targetFile, sourceFile, 0);
-        getLog().debug(
-            targetFile.getAbsolutePath() + " is uptodate : " + isUpToDate + " (compare to "
-                + sourceFile.getAbsolutePath() + ")");
+			String[] files = scanner.getIncludedFiles();
+			getLog().debug(files.length + " resource files found");
 
-        if (!isUpToDate) {
-          getLog().info("resources updated, module have to be cleaned");
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+			for (int i = 0; i < files.length; i++) {
+				// extracting file path relative to resource dir
+				String fileName = files[i];
 
-  private boolean parentUpdated() {
-    getLog().info("Verifying parent modules...");
+				File sourceFile = new File(source + File.separator + fileName);
+				File targetFile = new File(target + File.separator + fileName);
 
-    List<Dependency> dependencies = (List<Dependency>) project.getDependencies();
+				Boolean isUpToDate = SelectorUtils.isOutOfDate(targetFile,
+						sourceFile, 0);
+				getLog().debug(
+						targetFile.getAbsolutePath() + " is uptodate : "
+								+ isUpToDate + " (compare to "
+								+ sourceFile.getAbsolutePath() + ")");
 
-    for (Dependency dependency : dependencies) {
-      String groupId = dependency.getGroupId();
-      String artifactId = dependency.getArtifactId();
-      String version = dependency.getVersion();
+				if (!isUpToDate) {
+					getLog().info(
+							"resources updated, module have to be cleaned");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-      ModuleIdentifier identifier = new ModuleIdentifier(groupId, artifactId, version);
+	private boolean parentUpdated() {
+		getLog().info("Verifying parent modules...");
 
-      Module module = resolvedDependencies.get(identifier);
+		List<Dependency> dependencies = (List<Dependency>) project
+				.getDependencies();
 
-      if (getLog().isDebugEnabled() && module != null) {
-        getLog().debug("Module " + identifier + " updated ? " + module.isUpdated());
-      } else {
-        getLog().debug("Module " + identifier + " not found.");
-      }
+		for (Dependency dependency : dependencies) {
+			String groupId = dependency.getGroupId();
+			String artifactId = dependency.getArtifactId();
+			String version = dependency.getVersion();
 
-      if (module != null && module.isUpdated()) {
-        getLog().info("Module <" + groupId + ", " + artifactId + ", " + version + "> updated");
-        return true;
-      }
-    }
+			ModuleIdentifier identifier = new ModuleIdentifier(groupId,
+					artifactId, version);
 
-    return false;
-  }
+			Module module = resolvedDependencies.get(identifier);
+
+			if (getLog().isDebugEnabled()) {
+				if (module != null) {
+					getLog().debug(
+							"Module " + identifier + " updated ? "
+									+ module.isUpdated());
+				} else {
+					getLog().debug("Module " + identifier + " not found.");
+				}
+			}
+
+			if (module != null && module.isUpdated()) {
+				getLog().info(
+						"Module <" + groupId + ", " + artifactId + ", "
+								+ version + "> updated");
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Verify the pom was modified or not since last build.<br>
+	 * 
+	 * @return
+	 */
+	private boolean pomUpdated() {
+		boolean modified = false;
+
+		getLog().info("Verifying module descriptor ...");
+
+		File file = project.getFile();
+		String fileName = file.getAbsolutePath();
+
+		Long currentModifiedTime = file.lastModified();
+		Long lastModifiedTime = timestampManager.getTimestamp(fileName);
+
+		if (lastModifiedTime == null
+				|| currentModifiedTime.compareTo(lastModifiedTime) > 0) {
+			getLog().info("Pom descriptor modification detected.");
+			timestampManager.setTimestamp(fileName, currentModifiedTime);
+			modified = true;
+		} else {
+			getLog().debug("No modification on descriptor.");
+		}
+
+		return modified;
+	}
 }
