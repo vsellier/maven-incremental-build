@@ -110,7 +110,6 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException {
 		Module module = null;
-		String buildDirectory = project.getBuild().getOutputDirectory();
 
 		String targetDirectory = project.getBuild().getDirectory();
 
@@ -135,8 +134,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
 			getLog().debug("Module updated, cleaning target directory");
 
 			try {
-				FileUtils.deleteDirectory(buildDirectory);
-				getLog().info(buildDirectory + " deleted");
+				FileUtils.deleteDirectory(targetDirectory);
+				getLog().info(targetDirectory + " deleted");
 			} catch (IOException e) {
 				throw new MojoExecutionException("Unable to clean module.", e);
 			}
@@ -233,6 +232,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 		return module;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Boolean resourcesUpdated() {
 		getLog().info("Verifying resources...");
 		List<Resource> resources = (List<Resource>) project.getResources();
@@ -299,6 +299,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean parentUpdated() {
 		getLog().info("Verifying parent modules...");
 
