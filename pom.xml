@@ -3,17 +3,16 @@
 	<groupId>org.jvnet.maven.incrementalbuild</groupId>
 	<artifactId>incremental-build-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Incremental-build-plugin Maven Mojo</name>
 	<description> The Maven Incremental Build plugin is a plugin that
 		enable maven to recompile only what it have to when you call mvn
 		compile (It is not necessary to call clean phase now). </description>
 	<url>http://maven-incremental-build.dev.java.net</url>
 	<scm>
-		<tag>trunk</tag>
-		<connection>scm:svn:https://maven-incremental-build.dev.java.net/svn/maven-incremental-build/tags/incremental-build-plugin-1.0</connection>
-		<developerConnection>scm:svn:https://maven-incremental-build.dev.java.net/svn/maven-incremental-build/tags/incremental-build-plugin-1.0</developerConnection>
-		<url>https://maven-incremental-build.dev.java.net/source/browse/maven-incremental-build/tags/incremental-build-plugin-1.0</url>
+		<connection>scm:svn:https://maven-incremental-build.dev.java.net/svn/maven-incremental-build</connection>
+		<developerConnection>scm:svn:https://maven-incremental-build.dev.java.net/svn/maven-incremental-build</developerConnection>
+		<url>https://maven-incremental-build.dev.java.net/source/browse/maven-incremental-build/</url>
 	</scm>
 	<inceptionYear>2007</inceptionYear>
 	<mailingLists>
