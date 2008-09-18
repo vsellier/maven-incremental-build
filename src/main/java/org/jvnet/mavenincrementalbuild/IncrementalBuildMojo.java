@@ -99,7 +99,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	private MavenProjectHelper projectHelper;
 
 	/**
-	 * Dependencies from the reactor
+	 * Dependencies from the reactor. This attribute is a singleton for the complete build process
 	 */
 	private final static Map<ModuleIdentifier, Module> resolvedDependencies = new HashMap<ModuleIdentifier, Module>();
 
@@ -113,6 +113,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
 		String targetDirectory = project.getBuild().getDirectory();
 
+		
+		
 		if (getLog().isDebugEnabled()) {
 			getLog().debug("Resolved modules : " + resolvedDependencies);
 			getLog().debug("Loading previous timestamps ...");
@@ -141,6 +143,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 			}
 		}
 
+		
 		getLog().debug("Saving timestamps..");
 		try {
 			timestampManager.saveTimestamps();
