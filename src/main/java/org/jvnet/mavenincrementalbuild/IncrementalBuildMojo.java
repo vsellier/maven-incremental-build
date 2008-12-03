@@ -99,7 +99,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	private MavenProjectHelper projectHelper;
 
 	/**
-	 * Dependencies from the reactor. This attribute is a singleton for the complete build process
+	 * Dependencies from the reactor. This attribute is a singleton for the
+	 * complete build process
 	 */
 	private final static Map<ModuleIdentifier, Module> resolvedDependencies = new HashMap<ModuleIdentifier, Module>();
 
@@ -113,8 +114,6 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
 		String targetDirectory = project.getBuild().getDirectory();
 
-		
-		
 		if (getLog().isDebugEnabled()) {
 			getLog().debug("Resolved modules : " + resolvedDependencies);
 			getLog().debug("Loading previous timestamps ...");
@@ -129,8 +128,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
 					"Error loading previous timestamps.", e1);
 		}
 
-		module = saveModuleState(project, pomUpdated() || resourcesUpdated()
-				|| sourcesUpdated() || parentUpdated());
+		module = saveModuleState(project, pomUpdated() || parentUpdated()
+				|| resourcesUpdated() || sourcesUpdated());
 
 		if (module.isUpdated()) {
 			getLog().debug("Module updated, cleaning target directory");
@@ -143,7 +142,6 @@ public class IncrementalBuildMojo extends AbstractMojo {
 			}
 		}
 
-		
 		getLog().debug("Saving timestamps..");
 		try {
 			timestampManager.saveTimestamps();
@@ -154,15 +152,25 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
 	}
 
-	private Boolean sourcesUpdated() {
-		getLog().info("Verifying sources...");
+	/**
+	 * check if files in source directory are more recent than files on target
+	 * directory.
+	 * 
+	 * @param sourceDirectory base directory
+	 * @param targetDirectory the generated directory 
+	 * @return true if a file in target directory is more recent than files in
+	 *         source directory, false otherwise
+	 */
+	private Boolean directoryUpdated(File sourceDirectory, File targetDirectory) {
+		getLog().debug(
+				"checking " + sourceDirectory + " compared to "
+						+ targetDirectory);
+
 		Long lastSourceModificationDate = new Long(0);
 		Long lastTargetModificationDate = new Long(0);
-		File sourceDirectory = new File(project.getBuild().getSourceDirectory());
-		File targetDirectory = new File(project.getBuild().getOutputDirectory());
 
 		if ((!sourceDirectory.exists()) || (!targetDirectory.exists())) {
-			getLog().info("No sources or target dir found...");
+			getLog().info("sources or target dir not found...");
 			return true;
 		}
 
@@ -222,6 +230,19 @@ public class IncrementalBuildMojo extends AbstractMojo {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Check if modifications was done on the source folder since the last build
+	 * 
+	 * @return true if modification was detected, false otherwise
+	 */
+	private Boolean sourcesUpdated() {
+		getLog().info("Verifying sources...");
+		File sourceDirectory = new File(project.getBuild().getSourceDirectory());
+		File targetDirectory = new File(project.getBuild().getOutputDirectory());
+
+		return directoryUpdated(sourceDirectory, targetDirectory);
 	}
 
 	private Module saveModuleState(MavenProject project, Boolean mustBeCleaned) {
