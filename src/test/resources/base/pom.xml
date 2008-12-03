@@ -18,7 +18,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>net.jvnet.maven.incrementalbuild</groupId>
+				<groupId>org.jvnet.maven.incrementalbuild</groupId>
 				<artifactId>incremental-build-plugin</artifactId>
 				<executions>
 					<execution>
