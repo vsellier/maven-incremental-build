@@ -151,14 +151,14 @@
 <ol type="1"><li>checkout the sources from subversion and execute an <tt>mvn install</tt>
  to install it on you local repository</li>
 <li>add the jvnet maven2 repository on your pom or on your settings.xml<p>On one of you pom.xml or settings.xml you have to put this configuration :</p>
-<div class="source"><pre>        &lt;repositories&gt;
-                &lt;repository&gt;
+<div class="source"><pre>        &lt;pluginRepositories&gt;
+                &lt;pluginRepository&gt;
                         &lt;id&gt;maven2-repository.dev.java.net&lt;/id&gt;
                         &lt;name&gt;Java.net Repository for Maven&lt;/name&gt;
                         &lt;url&gt;http://download.java.net/maven/2/&lt;/url&gt;
                         &lt;layout&gt;default&lt;/layout&gt;
-                &lt;/repository&gt;
-        &lt;/repositories&gt;</pre>
+                &lt;/pluginRepository&gt;
+        &lt;/pluginRepositories&gt;</pre>
 </div>
 </li>
 </ol>
