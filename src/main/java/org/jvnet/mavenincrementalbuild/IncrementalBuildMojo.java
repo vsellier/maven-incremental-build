@@ -38,7 +38,6 @@ package org.jvnet.mavenincrementalbuild;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,6 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
@@ -63,13 +61,6 @@ import org.jvnet.mavenincrementalbuild.utils.TimestampsManager;
  * @requiresDependencyResolution test
  */
 public class IncrementalBuildMojo extends AbstractMojo {
-	/**
-	 * 
-	 * @parameter default-value="${project.dependencies}"
-	 * @required
-	 * @readonly
-	 */
-	private Collection dependencies;
 
 	/**
 	 * The Maven project.
@@ -79,24 +70,6 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	 * @readonly
 	 */
 	private MavenProject project;
-
-	/**
-	 * 
-	 * @parameter default-value="${project.artifacts}"
-	 * @required
-	 * @readonly
-	 */
-	private Collection artifacts;
-
-	/**
-	 * Helper class to assist in attaching artifacts to the project instance.
-	 * project-helper instance, used to make addition of resources simpler.
-	 * 
-	 * @component
-	 * @required
-	 * @readonly
-	 */
-	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Dependencies from the reactor. This attribute is a singleton for the
