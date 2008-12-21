@@ -41,8 +41,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.maven.model.Dependency;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -129,8 +130,10 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	 * check if files in source directory are more recent than files on target
 	 * directory.
 	 * 
-	 * @param sourceDirectory base directory
-	 * @param targetDirectory the generated directory 
+	 * @param sourceDirectory
+	 *            base directory
+	 * @param targetDirectory
+	 *            the generated directory
 	 * @return true if a file in target directory is more recent than files in
 	 *         source directory, false otherwise
 	 */
@@ -300,13 +303,13 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	private boolean parentUpdated() {
 		getLog().info("Verifying parent modules...");
 
-		List<Dependency> dependencies = (List<Dependency>) project
-				.getDependencies();
+		Set<Artifact> artifacts = (Set<Artifact>) project
+				.getArtifacts();
 
-		for (Dependency dependency : dependencies) {
-			String groupId = dependency.getGroupId();
-			String artifactId = dependency.getArtifactId();
-			String version = dependency.getVersion();
+		for (Artifact artifact : artifacts) {
+			String groupId = artifact.getGroupId();
+			String artifactId = artifact.getArtifactId();
+			String version = artifact.getVersion();
 
 			ModuleIdentifier identifier = new ModuleIdentifier(groupId,
 					artifactId, version);
