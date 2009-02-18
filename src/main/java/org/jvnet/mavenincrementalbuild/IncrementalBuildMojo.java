@@ -145,9 +145,9 @@ public class IncrementalBuildMojo extends AbstractMojo {
 		Long lastSourceModificationDate = new Long(0);
 		Long lastTargetModificationDate = new Long(0);
 
-		if ((!sourceDirectory.exists()) || (!targetDirectory.exists())) {
-			getLog().info("sources or target dir not found...");
-			return true;
+		if (!sourceDirectory.exists()) {
+			getLog().info("no sources to check ...");
+			return false;
 		}
 
 		DirectoryScanner scanner = new DirectoryScanner();
