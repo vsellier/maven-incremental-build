@@ -83,8 +83,21 @@ public class IncrementalBuildMojo extends AbstractMojo {
 	 */
 	private TimestampsManager timestampManager;
 
+    /**
+     * Set this to 'true' to deactivate the incremental build.
+     *
+     * @parameter expression="${noIncrementalBuild}
+     * @since 1.2
+     */
+    private boolean noIncrementalBuild;
+
 	public void execute() throws MojoExecutionException {
 		Module module = null;
+
+        if (noIncrementalBuild) {
+            getLog().info("Incremental build deactivated.");
+            return;
+        }
 
 		String targetDirectory = project.getBuild().getDirectory();
 
@@ -146,9 +159,14 @@ public class IncrementalBuildMojo extends AbstractMojo {
 		Long lastTargetModificationDate = new Long(0);
 
 		if (!sourceDirectory.exists()) {
-			getLog().info("no sources to check ...");
+			getLog().info("No sources to check ...");
 			return false;
 		}
+
+        if (!targetDirectory.exists()) {
+            getLog().info("No target directory, build is required.");
+            return true;
+        }
 
 		DirectoryScanner scanner = new DirectoryScanner();
 		getLog().debug("Source directory : " + sourceDirectory);
