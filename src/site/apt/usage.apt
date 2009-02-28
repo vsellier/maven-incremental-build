@@ -61,3 +61,21 @@ Introduction
   </project>
 +----- 
 
+* Deactivate the plugin
+
+  You can skip the plugin execution setting the variable noIncrementalBuild to true :
+
++-----
+[vincent@localhost base]$ mvn compile -DnoIncrementalBuild
+[...]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building incremental-build-plugin Maven Mojo Base Test
+[INFO]    task-segment: [compile]
+[INFO] ------------------------------------------------------------------------
+[INFO] [incremental-build:incremental-build {execution: default}]
+[INFO] Incremental build deactivated.
+[INFO] ------------------------------------------------------------------------
+[...]
++-----
+
+
