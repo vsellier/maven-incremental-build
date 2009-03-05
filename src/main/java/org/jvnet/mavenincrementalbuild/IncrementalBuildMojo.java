@@ -99,6 +99,15 @@ public class IncrementalBuildMojo extends AbstractMojo {
             return;
         }
 
+        ModuleIdentifier moduleIdentifier = new ModuleIdentifier(
+                project.getGroupId(), project.getArtifactId(), project
+                        .getVersion());
+
+        if (resolvedDependencies.get(moduleIdentifier) != null) {
+            getLog().info("Incremental build test already done. Skipping...");
+            return;
+        }
+
 		String targetDirectory = project.getBuild().getDirectory();
 
 		if (getLog().isDebugEnabled()) {
@@ -115,7 +124,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 					"Error loading previous timestamps.", e1);
 		}
 
-		module = saveModuleState(project, pomUpdated() || parentUpdated()
+		module = saveModuleState(project, moduleIdentifier, pomUpdated() || parentUpdated()
 				|| resourcesUpdated() || sourcesUpdated());
 
 		if (module.isUpdated()) {
@@ -239,13 +248,10 @@ public class IncrementalBuildMojo extends AbstractMojo {
 		return directoryUpdated(sourceDirectory, targetDirectory);
 	}
 
-	private Module saveModuleState(MavenProject project, Boolean mustBeCleaned) {
-		ModuleIdentifier identifier = new ModuleIdentifier(
-				project.getGroupId(), project.getArtifactId(), project
-						.getVersion());
-		Module module = new Module(identifier, mustBeCleaned);
+	private Module saveModuleState(MavenProject project, ModuleIdentifier identifier, Boolean mustBeCleaned) {
+        Module module = new Module(identifier, mustBeCleaned);
 
-		resolvedDependencies.put(identifier, module);
+		resolvedDependencies.put(module.getIdentifier(), module);
 
 		return module;
 	}
