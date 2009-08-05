@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 	<!--
 		Licensed to the Apache Software Foundation (ASF) under one or more
@@ -18,6 +19,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jvnet.maven.incrementalbuild</groupId>
 	<artifactId>site-skin</artifactId>
-	<version>1.0_SNAPSHOT</version>
+	<version>1.1_SNAPSHOT</version>
 	<name>Site Skin</name>
 </project>
