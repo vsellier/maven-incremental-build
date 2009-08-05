@@ -13,6 +13,6 @@
 	<skin>
 		<groupId>org.jvnet.maven.incrementalbuild</groupId>
 		<artifactId>site-skin</artifactId>
-		<version>1.0_SNAPSHOT</version>
+		<version>1.1_SNAPSHOT</version>
 	</skin>
 </project>
