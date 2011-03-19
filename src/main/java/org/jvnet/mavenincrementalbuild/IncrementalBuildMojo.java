@@ -45,6 +45,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.jvnet.mavenincrementalbuild.utils.MapFileManager;
+import org.jvnet.mavenincrementalbuild.utils.SetFileManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +59,8 @@ import java.util.*;
  * @requiresDependencyResolution test
  */
 public class IncrementalBuildMojo extends AbstractMojo {
-    private final static String TIMESTAMP_FILE = "timestamp";
+    private final static String TIMESTAMPS_FILE = "timestamp";
+    private static final String RESOURCES_LIST_FILE = "resourcesList";
 
     /**
      * The Maven project.
@@ -87,6 +89,11 @@ public class IncrementalBuildMojo extends AbstractMojo {
      */
     private boolean noIncrementalBuild;
 
+    /**
+     * The target directory root
+     */
+    private String targetDirectory = null;
+
     public void execute() throws MojoExecutionException {
         Module module = null;
 
@@ -103,7 +110,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
             return;
         }
 
-        String targetDirectory = project.getBuild().getDirectory();
+        targetDirectory = project.getBuild().getDirectory();
 
         if (getLog().isDebugEnabled()) {
             getLog().debug("Resolved modules : " + resolvedDependencies);
@@ -111,7 +118,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
         }
 
         try {
-            timestampManager = new MapFileManager<String, Long>(getLog(), targetDirectory, TIMESTAMP_FILE);
+            timestampManager = new MapFileManager<String, Long>(getLog(), targetDirectory, TIMESTAMPS_FILE);
             timestampManager.load();
         } catch (IOException e1) {
             getLog().error("Error loading previous timestamps", e1);
@@ -271,6 +278,17 @@ public class IncrementalBuildMojo extends AbstractMojo {
     protected Boolean resourcesUpdated() {
         getLog().info("Verifying resources...");
         List<Resource> resources = (List<Resource>) project.getResources();
+
+        SetFileManager<String> previousResources = new SetFileManager<String>(getLog(), targetDirectory, RESOURCES_LIST_FILE);
+        try {
+            previousResources.load();
+        } catch (IOException e) {
+            getLog().error("Error load previous resources file");
+            return true;
+        }
+
+        SetFileManager<String> actualResources = new SetFileManager<String>(getLog(), targetDirectory, RESOURCES_LIST_FILE);
+
         for (Resource resource : resources) {
             String source = resource.getDirectory();
             String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource.getTargetPath() : project.getBuild()
@@ -319,11 +337,24 @@ public class IncrementalBuildMojo extends AbstractMojo {
                         targetFile.getAbsolutePath() + " is uptodate : " + isUpToDate + " (compare to "
                                 + sourceFile.getAbsolutePath() + ")");
 
+                previousResources.remove(fileName);
+                actualResources.add(fileName);
+
                 if (!isUpToDate) {
                     getLog().info("resources updated, module have to be cleaned");
                     return true;
                 }
             }
+        }
+        if (previousResources.isEmpty()) {
+            getLog().info("A resource was deleted, module have to be cleaned");
+            return true;
+        }
+        try {
+            actualResources.save();
+        } catch (IOException e) {
+            getLog().warn("Error saving resource files list", e);
+            return true;
         }
         return false;
     }

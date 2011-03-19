@@ -3,10 +3,7 @@ package org.jvnet.mavenincrementalbuild.utils;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SetFileManager<T> extends FilePersistence<Set<T>> {
 
@@ -18,6 +15,11 @@ public class SetFileManager<T> extends FilePersistence<Set<T>> {
      */
     public SetFileManager(Log logger, String directory, String name) {
         super(logger, directory, name);
+        data = new TreeSet<T>();
+    }
+
+    public boolean isEmpty() {
+        return data.isEmpty();
     }
 
     public boolean contains(T value) {

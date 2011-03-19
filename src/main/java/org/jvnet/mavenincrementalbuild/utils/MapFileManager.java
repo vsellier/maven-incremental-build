@@ -17,7 +17,7 @@ import org.apache.maven.plugin.logging.Log;
  * @author Vincent Sellier
  * 
  */
-public class MapFileManager<E, T> extends FilePersistence<Map<E, T>> {
+public class MapFileManager<K, V> extends FilePersistence<Map<K, V>> {
 
 	/**
 	 * Create the MapFile manager.
@@ -28,14 +28,15 @@ public class MapFileManager<E, T> extends FilePersistence<Map<E, T>> {
 	 */
 	public MapFileManager(Log logger, String directory, String fileName) throws IOException {
         super(logger, directory, fileName);
+        data = new HashMap<K, V>();
 	}
 
 
-	public T get(E key) {
+	public V get(K key) {
 		return data.get(key);
 	}
 
-	public void set(E key, T value) {
+	public void set(K key, V value) {
 		data.put(key, value);
 	}
 }
