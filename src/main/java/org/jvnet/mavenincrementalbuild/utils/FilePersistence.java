@@ -49,7 +49,7 @@ public class FilePersistence<T> {
     public void save() throws IOException {
         LOGGER.debug("Saving file " + path + " ...");
 
-        File dir = new File(path);
+        File dir = new File(directory);
         if (!dir.exists()) {
             dir.mkdirs();
         }
