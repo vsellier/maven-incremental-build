@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project>
-	<body>
-		<menu name="Home">
-			<item name="java.net home" href="https://maven-incremental-build.dev.java.net/" />
-		</menu>
-		<menu name="Overview">
-			<item name="Introduction" href="index.html" />
-			<item name="Usage" href="usage.html" />
-		</menu>
-		<menu ref="reports" />
-	</body>
-	<skin>
-		<groupId>org.jvnet.maven.incrementalbuild</groupId>
-		<artifactId>site-skin</artifactId>
-		<version>1.1_SNAPSHOT</version>
-	</skin>
+    <body>
+        <menu name="Home">
+            <item name="java.net home" href="https://maven-incremental-build.dev.java.net/"/>
+        </menu>
+        <menu name="Overview">
+            <item name="Introduction" href="index.html"/>
+            <item name="Usage" href="usage.html"/>
+        </menu>
+        <menu ref="reports"/>
+    </body>
+    <skin>
+        <groupId>org.jvnet.maven.incrementalbuild</groupId>
+        <artifactId>site-skin</artifactId>
+        <version>1.1_SNAPSHOT</version>
+    </skin>
 </project>
