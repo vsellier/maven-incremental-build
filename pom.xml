@@ -13,8 +13,8 @@
     </description>
     <url>http://maven-incremental-build.dev.java.net</url>
     <scm>
-        <connection>scm:svn:http://svn.java.net/svn/maven-incremental-build~svn</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn</developerConnection>
+        <connection>scm:svn:http://svn.java.net/svn/maven-incremental-build~svn/trunk</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</developerConnection>
         <url>http://java.net/projects/maven-incremental-build/sources/svn/show</url>
     </scm>
     <inceptionYear>2007</inceptionYear>
