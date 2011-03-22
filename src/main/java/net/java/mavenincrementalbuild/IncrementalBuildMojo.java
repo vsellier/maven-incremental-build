@@ -35,6 +35,8 @@
  */
 package net.java.mavenincrementalbuild;
 
+import net.java.mavenincrementalbuild.utils.MapFileManager;
+import net.java.mavenincrementalbuild.utils.SetFileManager;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -44,8 +46,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
-import net.java.mavenincrementalbuild.utils.MapFileManager;
-import net.java.mavenincrementalbuild.utils.SetFileManager;
 
 import java.io.File;
 import java.io.IOException;

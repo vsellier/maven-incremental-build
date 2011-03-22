@@ -1,6 +1,5 @@
 package net.java.mavenincrementalbuild;
 
-import net.java.mavenincrementalbuild.IncrementalBuildMojo;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Resource;

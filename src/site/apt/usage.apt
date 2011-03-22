@@ -16,20 +16,7 @@ Introduction
 
   [[1]] checkout the sources from subversion and execute an <<<mvn install>>> to install it on you local repository
   
-  [[2]] add the jvnet maven2 repository on your pom or on your settings.xml
-
-  On one of you pom.xml or settings.xml you have to put this configuration :
-
-+-----
-	<pluginRepositories>
-		<pluginRepository>
-			<id>maven2-repository.dev.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
-			<layout>default</layout>
-		</pluginRepository>
-	</pluginRepositories>
-+-----
+  [[2]] The plugin is deployed into the central maven repository via the OSS repository provide by Sonatype. You just have to attach the plugin using the following xml.
 
 * Attach the plugin to the project lifecycle
 
@@ -43,7 +30,7 @@ Introduction
 		<plugins>
 			[...]
 			<plugin>
-				<groupId>org.jvnet.maven.incrementalbuild</groupId>
+				<groupId>net.java.incremental-build-plugin</groupId>
 				<artifactId>incremental-build-plugin</artifactId>
 				<executions>
 					<execution>

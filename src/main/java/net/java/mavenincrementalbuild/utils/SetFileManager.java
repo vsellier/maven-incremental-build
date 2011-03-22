@@ -2,15 +2,17 @@ package net.java.mavenincrementalbuild.utils;
 
 import org.apache.maven.plugin.logging.Log;
 
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SetFileManager<T> extends FilePersistence<Set<T>> {
 
     /**
      * Persist a list of string in a file
-     * @param logger the current maven logger
+     *
+     * @param logger    the current maven logger
      * @param directory the directory
-     * @param name the file name
+     * @param name      the file name
      */
     public SetFileManager(Log logger, String directory, String name) {
         super(logger, directory, name);
