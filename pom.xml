@@ -102,10 +102,6 @@
             <id>website</id>
             <url>file://${basedir}/www/${project.version}/maven</url>
         </site>
-        <repository>
-            <id>java.net-m2-repository</id>
-            <url>java-net:/maven2-repository~svn/trunk/repository/</url>
-        </repository>
     </distributionManagement>
     <repositories>
         <repository>
