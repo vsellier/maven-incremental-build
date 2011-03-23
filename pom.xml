@@ -7,6 +7,12 @@
     <version>1.4-SNAPSHOT</version>
     <name>Incremental-build-plugin Maven Mojo</name>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <description>The Maven Incremental Build plugin is a plugin that
         enable maven to recompile only what it have to when you call mvn
         compile (It is not necessary to call clean phase now).
