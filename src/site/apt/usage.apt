@@ -16,7 +16,7 @@ Introduction
 
   [[1]] checkout the sources from subversion and execute an <<<mvn install>>> to install it on you local repository
   
-  [[2]] The plugin is deployed into the central maven repository via the OSS repository provide by Sonatype. You just have to attach the plugin using the following xml.
+  [[2]] The plugin is deployed into the central maven repository via the OSS repository provided by Sonatype. You just have to attach the plugin using the following description.
 
 * Attach the plugin to the project lifecycle
 
