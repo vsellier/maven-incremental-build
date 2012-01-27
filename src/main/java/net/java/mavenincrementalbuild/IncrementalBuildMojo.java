@@ -49,7 +49,11 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Goal which touches a timestamp file.
@@ -283,11 +287,13 @@ public class IncrementalBuildMojo extends AbstractMojo {
         try {
             previousResources.load();
         } catch (IOException e) {
-            getLog().error("Error load previous resources file");
+            getLog().error("Error loading previous resources file");
             return true;
         }
 
         SetFileManager<String> actualResources = new SetFileManager<String>(getLog(), targetDirectory, RESOURCES_LIST_FILE);
+
+        boolean updateDetected = false;
 
         for (Resource resource : resources) {
             String source = resource.getDirectory();
@@ -342,21 +348,21 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
                 if (!isUpToDate) {
                     getLog().info("resources updated, module have to be cleaned");
-                    return true;
+                    updateDetected = true;
                 }
             }
         }
-        if (previousResources.isEmpty()) {
+        if (! previousResources.isEmpty()) {
             getLog().info("A resource was deleted, module have to be cleaned");
-            return true;
+            updateDetected = true;
         }
         try {
             actualResources.save();
         } catch (IOException e) {
             getLog().warn("Error saving resource files list", e);
-            return true;
+            updateDetected = true;
         }
-        return false;
+        return updateDetected;
     }
 
     @SuppressWarnings("unchecked")
@@ -419,9 +425,16 @@ public class IncrementalBuildMojo extends AbstractMojo {
     }
 
     /**
-     * for test
+     * for tests use only
      */
     protected void setProject(MavenProject project) {
         this.project = project;
+    }
+
+    /**
+     * for tests use only
+     */
+    protected void setTargetDirectory(String targetDirectory) {
+        this.targetDirectory = targetDirectory;
     }
 }
