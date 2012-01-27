@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.java.maven-incremental-build</groupId>
     <artifactId>incremental-build-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <name>Incremental-build-plugin Maven Mojo</name>
 
     <parent>
@@ -19,9 +18,9 @@
     </description>
     <url>http://java.net/projects/maven-incremental-build</url>
     <scm>
-        <connection>scm:svn:https//svn.java.net/svn/maven-incremental-build~svn/trunk</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</developerConnection>
-        <url>http://java.net/projects/maven-incremental-build/sources/svn/show</url>
+        <connection>scm:svn:https//svn.java.net/svn/maven-incremental-build~svn/tags/incremental-build-plugin-1.5</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/tags/incremental-build-plugin-1.5</developerConnection>
+        <url>http://java.net/projects/maven-incremental-build/sources/svn/show/tags/incremental-build-plugin-1.5</url>
     </scm>
     <inceptionYear>2007</inceptionYear>
     <mailingLists>
