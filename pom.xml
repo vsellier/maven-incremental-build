@@ -18,7 +18,7 @@
     </description>
     <url>http://java.net/projects/maven-incremental-build</url>
     <scm>
-        <connection>scm:svn:https//svn.java.net/svn/maven-incremental-build~svn/trunk</connection>
+        <connection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</connection>
         <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</developerConnection>
         <url>http://java.net/projects/maven-incremental-build/sources/svn/show</url>
     </scm>
