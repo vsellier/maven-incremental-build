@@ -340,7 +340,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
                 Boolean isUpToDate = SelectorUtils.isOutOfDate(targetFile, sourceFile, 0);
                 getLog().debug(
-                        targetFile.getAbsolutePath() + " is uptodate : " + isUpToDate + " (compare to "
+                        targetFile.getAbsolutePath() + " is uptodate : " + isUpToDate + " (compared to "
                                 + sourceFile.getAbsolutePath() + ")");
 
                 previousResources.remove(fileName);
