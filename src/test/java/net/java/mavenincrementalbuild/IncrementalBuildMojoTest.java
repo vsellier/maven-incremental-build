@@ -18,15 +18,31 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class IncrementalBuildMojoTest {
+    private static final String TARGET_TEST_SOURCE = "target/test/source";
     private static final String TARGET_TEST_OUTPUT = "target/test/output";
+    private static final String TARGET_TEST_TEST_SOURCE = "target/test/test";
+    private static final String TARGET_TEST_TEST_OUTPUT = "target/test/output-test";
     private static final String TARGET_TEST_RESOURCES = "target/test/resources";
+    private static final String TARGET_TEST_TEST_RESOURCES = "target/test/test-resources";
     private IncrementalBuildMojo mojo;
     private File resourcesDir;
+    private File resourceFile1;
+    /** The build target dir */ 
+    private File targetDir;
+    private File outputResourceFile1;
+    private File resourceFile2;
+    private File outputResourceFile2;
+    private File sourcesDir;
     private File sourceFile1;
-    private File outputDir;
-    private File outputFile1;
-    private File sourceFile2;
-    private File outputFile2;
+    private File outputSourceFile1;
+    private File testsDir;
+    private File testFile1;
+    private File testTargetDir;
+    private File outputTestFile1;
+    private File testResourcesDir;
+    private File testResourceFile1;
+    private File outputTestResourceFile1;
+            
 
     @Before
     public void init() throws IOException {
@@ -35,12 +51,24 @@ public class IncrementalBuildMojoTest {
         model.setBuild(build);
 
         build.setOutputDirectory(TARGET_TEST_OUTPUT);
+        build.setSourceDirectory(TARGET_TEST_SOURCE);
 
         List resources = new ArrayList();
         Resource resource = new Resource();
         resource.setDirectory(TARGET_TEST_RESOURCES);
         resources.add(resource);
         build.setResources(resources);
+
+        // Test elements
+        build.setTestSourceDirectory(TARGET_TEST_TEST_SOURCE);
+        List testResources = new ArrayList();
+        Resource testResource = new Resource();
+        testResource.setDirectory(TARGET_TEST_TEST_RESOURCES);
+        testResources.add(testResource);
+
+        build.setTestOutputDirectory(TARGET_TEST_TEST_OUTPUT);
+
+        build.setTestResources(testResources);
 
         MavenProject project = new MavenProject(model);
 
@@ -51,31 +79,39 @@ public class IncrementalBuildMojoTest {
         Calendar pastDate = Calendar.getInstance();
         pastDate.add(Calendar.HOUR, -1);
 
-        resourcesDir = new File(TARGET_TEST_RESOURCES);
-        FileUtils.deleteDirectory(resourcesDir);
-        resourcesDir.mkdirs();
-        sourceFile1 = new File(resourcesDir, "file1");
-        sourceFile1.createNewFile();
-        sourceFile1.setLastModified(pastDate.getTimeInMillis());
-        sourceFile2 = new File(resourcesDir, "file2");
-        sourceFile2.createNewFile();
-        sourceFile2.setLastModified(pastDate.getTimeInMillis());
+        resourcesDir = createDirectory(TARGET_TEST_RESOURCES);
+        resourceFile1 = createNewFile(resourcesDir, "file1");
+        resourceFile1.setLastModified(pastDate.getTimeInMillis());
+        resourceFile2 = createNewFile(resourcesDir, "file2");
+        resourceFile2.setLastModified(pastDate.getTimeInMillis());
 
-        outputDir = new File(TARGET_TEST_OUTPUT);
-        FileUtils.deleteDirectory(outputDir);
-        outputDir.mkdirs();
-        outputFile1 = new File(outputDir, "file1");
-        outputFile1.createNewFile();
-        outputFile2 = new File(outputDir, "file2");
-        outputFile2.createNewFile();
+        targetDir = createDirectory(TARGET_TEST_OUTPUT);
+        outputResourceFile1 = createNewFile(targetDir, "file1");
+        outputResourceFile2 = createNewFile(targetDir, "file2");
 
-        boolean resourcesModified = mojo.resourcesUpdated();
-        assertFalse("No modifications must be detected at this step", resourcesModified);
+        sourcesDir = createDirectory(TARGET_TEST_SOURCE);
+        sourceFile1 = createNewFile(sourcesDir, "sourcefile1.java");
+        outputSourceFile1 = createNewFile(targetDir, "sourceFile1.class");
+        
+        testsDir = createDirectory(TARGET_TEST_TEST_SOURCE);
+        testFile1 = createNewFile(testsDir, "testFile1.java");
+
+        testTargetDir = createDirectory(TARGET_TEST_TEST_OUTPUT);
+        outputTestFile1 = createNewFile(testTargetDir, "testFile1.class");
+
+        testResourcesDir = createDirectory(TARGET_TEST_TEST_RESOURCES);
+        testResourceFile1 = createNewFile(testResourcesDir, "testresource1");
+        testResourceFile1.setLastModified(pastDate.getTimeInMillis());
+        outputTestResourceFile1 = createNewFile(testTargetDir, "testresource1");
+
+        assertFalse("No modifications must be detected at this step", mojo.resourcesUpdated());
+        assertFalse("No modifications must be detected at this step", mojo.sourcesUpdated());
+        assertFalse("No modifications must be detected at this step", mojo.testsUpdated());
     }
 
     @Test
     public void testOutputResourceDeletedDetected() throws IOException {
-        outputFile2.delete();
+        outputResourceFile2.delete();
         assertTrue("Deleted output file not detected", mojo.resourcesUpdated());
     }
 
@@ -97,10 +133,35 @@ public class IncrementalBuildMojoTest {
     @Test
     public void testResourceDeletionDetected() throws IOException {
 
-        sourceFile2.delete();
+        resourceFile2.delete();
 
         boolean resourceModifier = mojo.resourcesUpdated();
         assertTrue("Resource deletion not detected", resourceModifier);
+    }
+
+    @Test
+    public void testSourceFileDeletionDetected() throws IOException {
+        sourceFile1.delete();
+        assertTrue("source deletion not detected", mojo.sourcesUpdated());
+    }
+    
+    @Test
+    public void testTestSourcesDeletionDetected() throws IOException {
+        testFile1.delete();
+        assertTrue("Test source deletion not detected", mojo.testsUpdated());
+    }
+
+    private File createDirectory(String path) throws IOException {
+        File file = new File(path);
+        FileUtils.deleteDirectory(file);
+        file.mkdirs();
+        return file;
+    }
+    
+    private File createNewFile(File directory, String fileName) throws IOException {
+        File file = new File(directory, fileName);
+        file.createNewFile();
+        return file;
     }
 }
 

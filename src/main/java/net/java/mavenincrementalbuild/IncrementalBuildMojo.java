@@ -65,6 +65,9 @@ import java.util.Set;
 public class IncrementalBuildMojo extends AbstractMojo {
     private final static String TIMESTAMPS_FILE = "timestamp";
     private static final String RESOURCES_LIST_FILE = "resourcesList";
+    private static final String TEST_RESOURCES_LIST_FILE = "testResourcesList";
+    private static final String SOURCE_LIST_FILE = "sourcesList";
+    private static final String TEST_LIST_FILE = "testsList";
 
     /**
      * The Maven project.
@@ -130,7 +133,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
         }
 
         module = saveModuleState(project, moduleIdentifier, pomUpdated() || parentUpdated() || resourcesUpdated()
-                || sourcesUpdated());
+                || sourcesUpdated() || testsUpdated());
 
         if (module.isUpdated()) {
             try {
@@ -183,16 +186,33 @@ public class IncrementalBuildMojo extends AbstractMojo {
     /**
      * check if files in source directory are more recent than files on target directory.
      *
-     * @param sourceDirectory base directory
-     * @param targetDirectory the generated directory
+     *
+     * @param sourceDirectoryPath base directory
+     * @param targetDirectoryPath the generated directory
      * @return true if a file in target directory is more recent than files in source directory, false otherwise
      */
-    private Boolean directoryUpdated(File sourceDirectory, File targetDirectory) {
-        getLog().debug("checking " + sourceDirectory + " compared to " + targetDirectory);
+    private Boolean directoryUpdated(String listFile, String sourceDirectoryPath, String targetDirectoryPath) {
+        getLog().debug("checking " + sourceDirectoryPath + " compared to " + targetDirectoryPath);
+
+        boolean updateDetected = false;
+        
+        // Used to detect source deletion
+        SetFileManager<String> previousSources = new SetFileManager<String>(getLog(), targetDirectoryPath, listFile);
+        try {
+            previousSources.load();
+        } catch (IOException e) {
+            getLog().error("Error loading previous sources file");
+            return true;
+        }
+
+        SetFileManager<String> actualSources = new SetFileManager<String>(getLog(), targetDirectoryPath, listFile);
 
         Long lastSourceModificationDate = new Long(0);
         Long lastTargetModificationDate = new Long(0);
 
+        File sourceDirectory = new File(sourceDirectoryPath);
+        File targetDirectory = new File(targetDirectoryPath);
+        
         if (!sourceDirectory.exists()) {
             getLog().info("No sources to check ...");
             return false;
@@ -200,7 +220,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
         if (!targetDirectory.exists()) {
             getLog().info("No target directory, build is required.");
-            return true;
+            updateDetected = true;
         }
 
         DirectoryScanner scanner = new DirectoryScanner();
@@ -209,7 +229,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
         scanner.setIncludes(new String[]{"**/*"});
         scanner.setExcludes(DirectoryScanner.DEFAULTEXCLUDES);
 
-        getLog().debug("Scanning sources...");
+        getLog().debug("Scanning sources directory...");
         scanner.scan();
         String[] files = scanner.getIncludedFiles();
         getLog().debug("Source files : " + Arrays.toString(files));
@@ -221,6 +241,9 @@ public class IncrementalBuildMojo extends AbstractMojo {
             if (lastModification > lastSourceModificationDate) {
                 lastSourceModificationDate = lastModification;
             }
+            // Saving file into list
+            actualSources.add(files[i]);
+            previousSources.remove(files[i]);
         }
         getLog().debug("Last source modification : " + lastSourceModificationDate);
 
@@ -232,7 +255,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
         scanner.setIncludes(new String[]{"**/*"});
         scanner.addDefaultExcludes();
 
-        getLog().debug("Scanning output dir...");
+        getLog().debug("Scanning output directory...");
         scanner.scan();
         files = scanner.getIncludedFiles();
         getLog().debug("Target files : " + Arrays.toString(files));
@@ -249,12 +272,27 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
         if (lastSourceModificationDate > lastTargetModificationDate) {
             getLog().info("Source modification detected, clean will be called");
-            return true;
+            updateDetected = true;
         } else {
-            getLog().debug("No changes detected.");
-            return false;
+            getLog().debug("No timestamp changes detected.");
+            updateDetected |= false;
         }
 
+        // Not all previous file was found into the source directory
+        // Assume some files was deleted into the source directory
+        if (! previousSources.isEmpty()) {
+            getLog().info("At least one source file was deleted, module have to be cleaned");
+            updateDetected = true;
+        }
+        getLog().debug("Saving source list");
+        try {
+            actualSources.save();
+        } catch (IOException e) {
+            getLog().warn("Error saving source files list", e);
+            updateDetected = true;
+        }
+        
+        return updateDetected;
     }
 
     /**
@@ -262,12 +300,27 @@ public class IncrementalBuildMojo extends AbstractMojo {
      *
      * @return true if modification was detected, false otherwise
      */
-    private Boolean sourcesUpdated() {
+    protected Boolean sourcesUpdated() {
         getLog().info("Verifying sources...");
-        File sourceDirectory = new File(project.getBuild().getSourceDirectory());
-        File targetDirectory = new File(project.getBuild().getOutputDirectory());
 
-        return directoryUpdated(sourceDirectory, targetDirectory);
+        return directoryUpdated(SOURCE_LIST_FILE, project.getBuild().getSourceDirectory(), project.getBuild().getOutputDirectory());
+    }
+
+    /**
+     * Check if modification was done on the test folders
+     *
+     * @return true if modification was detected, false otherwise
+     */
+    protected Boolean testsUpdated() {
+        boolean update;
+        getLog().info("Verifying tests sources...");
+        update = directoryUpdated(TEST_LIST_FILE, project.getBuild().getTestSourceDirectory(), project.getBuild().getTestOutputDirectory());
+
+        getLog().info("Verifying tests resources...");
+        update |= testResourcesUpdated();
+
+        getLog().debug("test update detected : " + update);
+        return update;
     }
 
     private Module saveModuleState(MavenProject project, ModuleIdentifier identifier, Boolean mustBeCleaned) {
@@ -278,12 +331,29 @@ public class IncrementalBuildMojo extends AbstractMojo {
         return module;
     }
 
-    @SuppressWarnings("unchecked")
     protected Boolean resourcesUpdated() {
         getLog().info("Verifying resources...");
+
         List<Resource> resources = (List<Resource>) project.getResources();
 
-        SetFileManager<String> previousResources = new SetFileManager<String>(getLog(), targetDirectory, RESOURCES_LIST_FILE);
+        return resourcesUpdated(project.getBuild().getOutputDirectory(), RESOURCES_LIST_FILE, resources);
+    }
+
+    protected Boolean testResourcesUpdated() {
+        getLog().info("Verifying test resources...");
+
+        List<Resource> resources = (List<Resource>) project.getTestResources();
+
+        return resourcesUpdated(project.getBuild().getTestOutputDirectory(), TEST_RESOURCES_LIST_FILE, resources);
+    }
+
+    /**
+     * Saving modification dates into a file because resources are put into with classes into the output dir
+     */
+    @SuppressWarnings("unchecked")
+    protected Boolean resourcesUpdated(String outputDirectory, String resourceListFile, List<Resource> resources) {
+
+        SetFileManager<String> previousResources = new SetFileManager<String>(getLog(), targetDirectory, resourceListFile);
         try {
             previousResources.load();
         } catch (IOException e) {
@@ -291,14 +361,13 @@ public class IncrementalBuildMojo extends AbstractMojo {
             return true;
         }
 
-        SetFileManager<String> actualResources = new SetFileManager<String>(getLog(), targetDirectory, RESOURCES_LIST_FILE);
+        SetFileManager<String> actualResources = new SetFileManager<String>(getLog(), targetDirectory, resourceListFile);
 
         boolean updateDetected = false;
 
         for (Resource resource : resources) {
             String source = resource.getDirectory();
-            String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource.getTargetPath() : project.getBuild()
-                    .getOutputDirectory();
+            String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource.getTargetPath() : outputDirectory;
             List<String> includes = (List<String>) resource.getIncludes();
             List<String> excludes = (List<String>) resource.getExcludes();
 
@@ -352,6 +421,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
                 }
             }
         }
+        // Not all previous file was found into the source directory
+        // Assume some files was deleted into the source directory
         if (! previousResources.isEmpty()) {
             getLog().info("A resource was deleted, module have to be cleaned");
             updateDetected = true;
