@@ -3,7 +3,7 @@
     <groupId>net.java.maven-incremental-build</groupId>
     <artifactId>incremental-build-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.6</version>
+    <version>1.7-SNAPSHOT</version>
     <name>Incremental-build-plugin Maven Mojo</name>
 
     <parent>
@@ -18,9 +18,9 @@
     </description>
     <url>http://java.net/projects/maven-incremental-build</url>
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/tags/incremental-build-plugin-1.6</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/tags/incremental-build-plugin-1.6</developerConnection>
-        <url>http://java.net/projects/maven-incremental-build/sources/svn/show/tags/incremental-build-plugin-1.6</url>
+        <connection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/maven-incremental-build~svn/trunk</developerConnection>
+        <url>http://java.net/projects/maven-incremental-build/sources/svn/show</url>
     </scm>
     <inceptionYear>2007</inceptionYear>
     <mailingLists>
