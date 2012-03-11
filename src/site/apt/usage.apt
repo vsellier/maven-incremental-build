@@ -31,7 +31,7 @@ Introduction
 			[...]
 			<plugin>
 				<groupId>net.java.incremental-build-plugin</groupId>
-				<artifactId>incremental-build-plugin</artifactId>
+				<artifactId>maven-incremental-build</artifactId>
 				<executions>
 					<execution>
 						<goals>
