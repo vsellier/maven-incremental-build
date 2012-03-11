@@ -65,9 +65,9 @@ import java.util.Set;
 public class IncrementalBuildMojo extends AbstractMojo {
     private final static String TIMESTAMPS_FILE = "timestamp";
     private static final String RESOURCES_LIST_FILE = "resourcesList";
-    private static final String TEST_RESOURCES_LIST_FILE = "testResourcesList";
+    protected static final String TEST_RESOURCES_LIST_FILE = "testResourcesList";
     private static final String SOURCE_LIST_FILE = "sourcesList";
-    private static final String TEST_LIST_FILE = "testsList";
+    protected static final String TEST_LIST_FILE = "testsList";
 
     /**
      * The Maven project.
@@ -219,8 +219,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
         }
 
         if (!targetDirectory.exists()) {
-            getLog().info("No target directory, build is required.");
-            updateDetected = true;
+            getLog().info("No target directory " + targetDirectoryPath + ", project already cleaned.");
+            updateDetected = false;
         }
 
         DirectoryScanner scanner = new DirectoryScanner();
@@ -246,44 +246,48 @@ public class IncrementalBuildMojo extends AbstractMojo {
             previousSources.remove(files[i]);
         }
         getLog().debug("Last source modification : " + lastSourceModificationDate);
-
-        String targetDir = project.getBuild().getOutputDirectory();
-        getLog().debug("Target directory : " + targetDir);
-
-        scanner = new DirectoryScanner();
-        scanner.setBasedir(project.getBuild().getOutputDirectory());
-        scanner.setIncludes(new String[]{"**/*"});
-        scanner.addDefaultExcludes();
-
-        getLog().debug("Scanning output directory...");
-        scanner.scan();
-        files = scanner.getIncludedFiles();
-        getLog().debug("Target files : " + Arrays.toString(files));
-
-        // TODO put this in a method
-        for (int i = 0; i < files.length; i++) {
-            File file = new File(targetDir, files[i]);
-            Long lastModification = file.lastModified();
-            if (lastModification > lastTargetModificationDate) {
-                lastTargetModificationDate = lastModification;
-            }
-        }
-        getLog().debug("Last target modification date : " + lastTargetModificationDate);
-
-        if (lastSourceModificationDate > lastTargetModificationDate) {
-            getLog().info("Source modification detected, clean will be called");
-            updateDetected = true;
-        } else {
-            getLog().debug("No timestamp changes detected.");
-            updateDetected |= false;
-        }
-
         // Not all previous file was found into the source directory
         // Assume some files was deleted into the source directory
         if (! previousSources.isEmpty()) {
             getLog().info("At least one source file was deleted, module have to be cleaned");
             updateDetected = true;
         }
+
+        // Scanning target directory to compare last build date
+        String targetDir = project.getBuild().getOutputDirectory();
+        getLog().debug("Target directory : " + targetDir);
+        if (! new File(targetDir).exists()) {
+            getLog().debug("Target dir does not exist, project is already clear");
+        } else {
+            scanner = new DirectoryScanner();
+            scanner.setBasedir(targetDir);
+            scanner.setIncludes(new String[]{"**/*"});
+            scanner.addDefaultExcludes();
+
+            getLog().debug("Scanning output directory...");
+            scanner.scan();
+            files = scanner.getIncludedFiles();
+            getLog().debug("Target files : " + Arrays.toString(files));
+
+            // TODO put this in a method
+            for (int i = 0; i < files.length; i++) {
+                File file = new File(targetDir, files[i]);
+                Long lastModification = file.lastModified();
+                if (lastModification > lastTargetModificationDate) {
+                    lastTargetModificationDate = lastModification;
+                }
+            }
+            getLog().debug("Last target modification date : " + lastTargetModificationDate);
+
+            if (lastSourceModificationDate > lastTargetModificationDate) {
+                getLog().info("Source modification detected, clean will be called");
+                updateDetected = true;
+            } else {
+                getLog().debug("No timestamp changes detected.");
+                updateDetected |= false;
+            }
+        }
+
         getLog().debug("Saving source list");
         try {
             actualSources.save();
@@ -375,7 +379,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
             getLog().debug("Resources includes : " + includes);
 
             if (!new File(source).exists()) {
-                getLog().info("Resources directory does not exist : " + source);
+                getLog().info("Resources directory does not exist " + source + ". Skipped...");
                 continue;
             }
 

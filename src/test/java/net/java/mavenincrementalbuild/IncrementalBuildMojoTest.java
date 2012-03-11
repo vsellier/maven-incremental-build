@@ -110,6 +110,26 @@ public class IncrementalBuildMojoTest {
     }
 
     @Test
+    public void testNoTestDirectoryNoModification() throws IOException {
+        FileUtils.deleteDirectory(testsDir);
+        FileUtils.deleteQuietly(new File(TARGET_TEST_OUTPUT + File.separatorChar + IncrementalBuildMojo.TEST_LIST_FILE));
+        assertFalse("No modification must be detected if no test directory exists", mojo.testsUpdated());
+    }
+
+    @Test
+    public void testNoTestResourcesDirectoryNoModification() throws IOException {
+        FileUtils.deleteDirectory(testResourcesDir);
+        FileUtils.deleteQuietly(new File(TARGET_TEST_OUTPUT + File.separatorChar + IncrementalBuildMojo.TEST_RESOURCES_LIST_FILE));
+        assertFalse("No modification must be detected if no test resources directory exists", mojo.testsUpdated());
+    }
+
+    @Test
+    public void testNoResourcesDirectoryNoModification() throws IOException {
+        FileUtils.deleteDirectory(resourcesDir);
+        assertFalse("No modification must be detected if no resources directory exists", mojo.testsUpdated());
+    }
+
+    @Test
     public void testOutputResourceDeletedDetected() throws IOException {
         outputResourceFile2.delete();
         assertTrue("Deleted output file not detected", mojo.resourcesUpdated());
