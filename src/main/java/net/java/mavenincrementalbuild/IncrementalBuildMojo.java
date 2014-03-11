@@ -35,33 +35,36 @@
  */
 package net.java.mavenincrementalbuild;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.java.mavenincrementalbuild.utils.MapFileManager;
 import net.java.mavenincrementalbuild.utils.SetFileManager;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Goal which touches a timestamp file.
- *
- * @goal incremental-build
- * @phase validate
- * @requiresDependencyResolution test
  */
+@Mojo(name = "incremental-build", threadSafe = true, defaultPhase = LifecyclePhase.VALIDATE, //
+requiresDependencyResolution = ResolutionScope.TEST)
 public class IncrementalBuildMojo extends AbstractMojo {
     private final static String TIMESTAMPS_FILE = "timestamp";
     private static final String RESOURCES_LIST_FILE = "resourcesList";
@@ -71,17 +74,14 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
     /**
      * The Maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(property = "project", required = true, readonly = true)
     private MavenProject project;
 
     /**
      * Dependencies from the reactor. This attribute is a singleton for the complete build process
      */
-    private final static Map<ModuleIdentifier, Module> resolvedDependencies = new HashMap<ModuleIdentifier, Module>();
+    private final static Map<ModuleIdentifier, Module> resolvedDependencies = new ConcurrentHashMap<ModuleIdentifier, Module>();
 
     /**
      * the timestamp manager
@@ -91,9 +91,9 @@ public class IncrementalBuildMojo extends AbstractMojo {
     /**
      * Set this to 'true' to deactivate the incremental build.
      *
-     * @parameter expression="${noIncrementalBuild}
      * @since 1.2
      */
+    @Parameter(property = "noIncrementalBuild")
     private boolean noIncrementalBuild;
 
     /**
@@ -195,7 +195,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
         getLog().debug("checking " + sourceDirectoryPath + " compared to " + targetDirectoryPath);
 
         boolean updateDetected = false;
-        
+
         // Used to detect source deletion
         SetFileManager<String> previousSources = new SetFileManager<String>(getLog(), targetDirectoryPath, listFile);
         try {
@@ -212,7 +212,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
         File sourceDirectory = new File(sourceDirectoryPath);
         File targetDirectory = new File(targetDirectoryPath);
-        
+
         if (!sourceDirectory.exists()) {
             getLog().info("No sources to check ...");
             return false;
@@ -295,7 +295,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
             getLog().warn("Error saving source files list", e);
             updateDetected = true;
         }
-        
+
         return updateDetected;
     }
 
@@ -338,7 +338,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
     protected Boolean resourcesUpdated() {
         getLog().info("Verifying resources...");
 
-        List<Resource> resources = (List<Resource>) project.getResources();
+        List<Resource> resources = project.getResources();
 
         return resourcesUpdated(project.getBuild().getOutputDirectory(), RESOURCES_LIST_FILE, resources);
     }
@@ -346,7 +346,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
     protected Boolean testResourcesUpdated() {
         getLog().info("Verifying test resources...");
 
-        List<Resource> resources = (List<Resource>) project.getTestResources();
+        List<Resource> resources = project.getTestResources();
 
         return resourcesUpdated(project.getBuild().getTestOutputDirectory(), TEST_RESOURCES_LIST_FILE, resources);
     }
@@ -372,8 +372,8 @@ public class IncrementalBuildMojo extends AbstractMojo {
         for (Resource resource : resources) {
             String source = resource.getDirectory();
             String target = StringUtils.isNotEmpty(resource.getTargetPath()) ? resource.getTargetPath() : outputDirectory;
-            List<String> includes = (List<String>) resource.getIncludes();
-            List<String> excludes = (List<String>) resource.getExcludes();
+            List<String> includes = resource.getIncludes();
+            List<String> excludes = resource.getExcludes();
 
             getLog().debug("Resources excludes : " + excludes);
             getLog().debug("Resources includes : " + includes);
@@ -389,12 +389,12 @@ public class IncrementalBuildMojo extends AbstractMojo {
 
             if (includes != null && !includes.isEmpty()) {
                 getLog().debug("add inclusion.");
-                scanner.setIncludes((String[]) includes.toArray(new String[includes.size()]));
+                scanner.setIncludes(includes.toArray(new String[includes.size()]));
             }
 
             if (excludes != null && !excludes.isEmpty()) {
                 getLog().debug("add exclusions.");
-                scanner.setExcludes((String[]) excludes.toArray(new String[excludes.size()]));
+                scanner.setExcludes(excludes.toArray(new String[excludes.size()]));
             }
             scanner.addDefaultExcludes();
 
@@ -444,7 +444,7 @@ public class IncrementalBuildMojo extends AbstractMojo {
     private boolean parentUpdated() {
         getLog().info("Verifying parent modules...");
 
-        Set<Artifact> artifacts = (Set<Artifact>) project.getArtifacts();
+        Set<Artifact> artifacts = project.getArtifacts();
 
         for (Artifact artifact : artifacts) {
             String groupId = artifact.getGroupId();
